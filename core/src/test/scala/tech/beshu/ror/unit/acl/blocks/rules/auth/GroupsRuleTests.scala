@@ -25,7 +25,7 @@ import org.scalatest.matchers.should.Matchers.*
 import org.scalatest.wordspec.AnyWordSpecLike
 import tech.beshu.ror.accesscontrol.blocks.BlockContext.UserMetadataRequestBlockContext
 import tech.beshu.ror.accesscontrol.blocks.BlockContextUpdater.UserMetadataRequestBlockContextUpdater
-import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, UserDef}
 import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef.GroupMappings.Advanced.Mapping
 import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef.Mode.WithGroupsMapping.Auth.SingleRule
 import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef.Mode.{WithGroupsMapping, WithoutGroupsMapping}
@@ -51,6 +51,7 @@ import tech.beshu.ror.syntax.*
 import tech.beshu.ror.utils.TestsUtils.*
 import tech.beshu.ror.utils.uniquelist.{UniqueList, UniqueNonEmptyList}
 
+import scala.collection.immutable
 import scala.concurrent.duration.*
 import scala.language.postfixOps
 
@@ -185,6 +186,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     def matching(user: User.Id): AuthenticationRule = new AuthenticationRule with AuthenticationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-fulfilling")
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override implicit val userIdCaseSensitivity: CaseSensitivity = CaseSensitivity.Enabled
       override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 
@@ -194,6 +196,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     val rejecting: AuthenticationRule = new AuthenticationRule with AuthenticationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-rejecting")
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override implicit val userIdCaseSensitivity: CaseSensitivity = CaseSensitivity.Enabled
       override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 
@@ -203,6 +206,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     val throwing: AuthenticationRule = new AuthenticationRule with AuthenticationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-throwing")
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override implicit val userIdCaseSensitivity: CaseSensitivity = CaseSensitivity.Enabled
       override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 
@@ -215,6 +219,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     def matching(groups: NonEmptyList[Group]): AuthorizationRule = new AuthorizationRule with AuthorizationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-fulfilling")
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
 
       override protected def authorize[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] = {
         Task.now(Fulfilled(blockContext.withBlockMetadata(
@@ -225,7 +230,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     val rejecting: AuthorizationRule = new AuthorizationRule with AuthorizationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-rejecting")
-
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override protected def authorize[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] =
         Task.now(Rejected())
     }
@@ -235,7 +240,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     def matching(user: User.Id, groups: NonEmptyList[Group]): AuthRule = new AuthRule with AuthenticationRule with AuthorizationRule with AuthorizationImpersonationCustomSupport with AuthenticationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-fulfilling")
-
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
       override implicit val userIdCaseSensitivity: CaseSensitivity = CaseSensitivity.Enabled
 
@@ -252,7 +257,7 @@ trait GroupsRuleTests[GL <: GroupsLogic: GroupsLogic.Creator] extends AnyWordSpe
 
     val rejecting: AuthRule = new AuthRule with AuthenticationRule with AuthorizationRule with AuthorizationImpersonationCustomSupport with AuthenticationImpersonationCustomSupport {
       override val name: Rule.Name = Rule.Name("dummy-rejecting")
-
+      override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
       override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
       override implicit val userIdCaseSensitivity: CaseSensitivity = CaseSensitivity.Enabled
 

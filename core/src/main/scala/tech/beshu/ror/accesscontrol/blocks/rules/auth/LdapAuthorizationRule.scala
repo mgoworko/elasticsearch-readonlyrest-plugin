@@ -19,6 +19,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 import cats.implicits.*
 import monix.eval.Task
 import tech.beshu.ror.accesscontrol.blocks.BlockContext
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.definitions.ldap.LdapAuthorizationService
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
@@ -36,6 +37,8 @@ class LdapAuthorizationRule(val settings: Settings,
   extends BaseAuthorizationRule {
 
   override val name: Rule.Name = LdapAuthorizationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] = Set(ExternalDependency.LdapAuthorization(settings.ldap))
 
   override val groupsLogic: GroupsLogic = settings.groupsLogic
 

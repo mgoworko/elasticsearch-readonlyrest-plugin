@@ -20,6 +20,7 @@ import cats.implicits.*
 import eu.timepit.refined.types.string.NonEmptyString
 import monix.eval.Task
 import org.apache.commons.codec.digest.Crypt.crypt
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
@@ -32,6 +33,7 @@ import tech.beshu.ror.accesscontrol.domain.{CaseSensitivity, Credentials, Reques
 import tech.beshu.ror.syntax.*
 
 import java.util.regex.Pattern
+import scala.collection.immutable
 
 final class AuthKeyUnixRule(override val settings: BasicAuthenticationRule.Settings[UnixHashedCredentials],
                             override implicit val userIdCaseSensitivity: CaseSensitivity,
@@ -39,6 +41,8 @@ final class AuthKeyUnixRule(override val settings: BasicAuthenticationRule.Setti
   extends BasicAuthenticationRule(settings) {
 
   override val name: Rule.Name = AuthKeyUnixRule.Name.name
+
+  override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
 
   override protected def compare(configuredCredentials: UnixHashedCredentials,
                                  credentials: Credentials): Task[Boolean] = Task {

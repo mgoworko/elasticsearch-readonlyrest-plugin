@@ -18,6 +18,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import cats.implicits.*
 import monix.eval.Task
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
@@ -28,12 +29,16 @@ import tech.beshu.ror.accesscontrol.blocks.rules.auth.base.impersonation.SimpleA
 import tech.beshu.ror.accesscontrol.domain.{CaseSensitivity, Credentials, RequestId, User}
 import tech.beshu.ror.syntax.*
 
+import scala.collection.immutable
+
 final class AuthKeyRule(override val settings: BasicAuthenticationRule.Settings[Credentials],
                         override implicit val userIdCaseSensitivity: CaseSensitivity,
                         override val impersonation: Impersonation)
   extends BasicAuthenticationRule(settings) {
 
   override val name: Rule.Name = AuthKeyRule.Name.name
+
+  override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
 
   override protected def compare(configuredCredentials: Credentials,
                                  credentials: Credentials): Task[Boolean] = Task.now {

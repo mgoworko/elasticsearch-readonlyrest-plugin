@@ -19,7 +19,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth.base
 import cats.data.{NonEmptyList, OptionT}
 import monix.eval.Task
 import tech.beshu.ror.utils.RequestIdAwareLogging
-import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, UserDef}
 import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef.Mode.WithGroupsMapping.Auth
 import tech.beshu.ror.accesscontrol.blocks.definitions.UserDef.{GroupMappings, Mode}
 import tech.beshu.ror.accesscontrol.blocks.metadata.BlockMetadata
@@ -43,6 +43,8 @@ abstract class BaseGroupsRule[+GL <: GroupsLogic](override val name: Rule.Name,
     with AuthenticationImpersonationCustomSupport
     with AuthorizationImpersonationCustomSupport
     with RequestIdAwareLogging {
+
+  override val externalDependencies: Set[ExternalDependency] = Set.empty
 
   override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 

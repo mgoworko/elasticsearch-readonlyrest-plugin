@@ -20,6 +20,7 @@ import cats.{Monad, Show}
 import monix.eval.Task
 import tech.beshu.ror.accesscontrol.blocks.BlockContext.GeneralNonIndexRequestBlockContext
 import tech.beshu.ror.accesscontrol.blocks.BlockContextUpdater.GeneralNonIndexRequestBlockContextUpdater
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.RuleResult
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.RuleResult.Fulfilled
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.RuleResult.Rejected.Cause
@@ -31,10 +32,10 @@ import tech.beshu.ror.accesscontrol.utils.TaskRuleResultOps.*
 import tech.beshu.ror.syntax.*
 
 import scala.annotation.{nowarn, tailrec}
+import scala.collection.immutable
 
 sealed trait Rule {
   def name: Rule.Name
-
   def check[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]]
 }
 
@@ -144,6 +145,7 @@ object Rule {
   trait AuthenticationRule extends Rule {
     this: AuthenticationImpersonationSupport =>
 
+    def externalDependencies: immutable.Set[ExternalDependency]
     def eligibleUsers: AuthenticationRule.EligibleUsersSupport
     implicit def userIdCaseSensitivity: CaseSensitivity
 
@@ -172,6 +174,8 @@ object Rule {
 
   trait AuthorizationRule extends Rule {
     this: AuthorizationImpersonationSupport =>
+
+    def externalDependencies: immutable.Set[ExternalDependency]
 
     override def check[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] = {
       authorize(blockContext)

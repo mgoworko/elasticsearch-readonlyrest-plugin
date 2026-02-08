@@ -17,7 +17,8 @@
 package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import monix.eval.Task
-import tech.beshu.ror.accesscontrol.blocks.definitions.JwtDefForAuthorization
+import tech.beshu.ror.accesscontrol.blocks.definitions.JwtDef.SignatureCheckMethod
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, JwtDefForAuthorization}
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.{AuthorizationRule, RuleName, RuleResult}
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.RuleResult.*
@@ -37,6 +38,14 @@ final class JwtAuthorizationRule(val settings: Settings)
     with BaseJwtRule {
 
   override val name: Rule.Name = JwtAuthorizationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] =
+    settings.jwt.checkMethod match {
+      case SignatureCheckMethod.NoCheck(service) => Set(ExternalDependency.ExternalAuthentication(service))
+      case SignatureCheckMethod.Hmac(key) => Set.empty
+      case SignatureCheckMethod.Rsa(pubKey) => Set.empty
+      case SignatureCheckMethod.Ec(pubKey) => Set.empty
+    }
 
   override protected[rules] def authorize[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] = {
     settings.groupsLogic match {

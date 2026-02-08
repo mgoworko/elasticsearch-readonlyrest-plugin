@@ -18,7 +18,8 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import cats.implicits.toShow
 import monix.eval.Task
-import tech.beshu.ror.accesscontrol.blocks.definitions.JwtDefForAuthentication
+import tech.beshu.ror.accesscontrol.blocks.definitions.JwtDef.SignatureCheckMethod
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, JwtDefForAuthentication}
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.{AuthenticationRule, RuleName, RuleResult}
@@ -40,6 +41,14 @@ final class JwtAuthenticationRule(val settings: Settings,
     with BaseJwtRule {
 
   override val name: Rule.Name = JwtAuthenticationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] =
+    settings.jwt.checkMethod match {
+      case SignatureCheckMethod.NoCheck(service) => Set(ExternalDependency.ExternalAuthentication(service))
+      case SignatureCheckMethod.Hmac(key) => Set.empty
+      case SignatureCheckMethod.Rsa(pubKey) => Set.empty
+      case SignatureCheckMethod.Ec(pubKey) => Set.empty
+    }
 
   override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 

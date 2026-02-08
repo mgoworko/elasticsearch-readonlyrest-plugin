@@ -36,6 +36,20 @@ final case class UserDef private(override val id: UUID,
   override type Id = UUID // artificial ID (won't be used)
   override val idShow: Show[UUID] = Show.show(_.toString)
 
+  lazy val externalDependencies: Set[ExternalDependency] = {
+    val rule = mode match {
+      case Mode.WithoutGroupsMapping(auth, localGroups) =>
+        auth
+      case Mode.WithGroupsMapping(auth, groupMappings) => auth match {
+        case Auth.SeparateRules(authenticationRule, authorizationRule) =>
+          authenticationRule
+        case Auth.SingleRule(rule) =>
+          rule
+      }
+    }
+    rule.externalDependencies
+  }
+
   def localGroups: UniqueNonEmptyList[Group] =
     mode match {
       case Mode.WithoutGroupsMapping(_, localGroups) => localGroups

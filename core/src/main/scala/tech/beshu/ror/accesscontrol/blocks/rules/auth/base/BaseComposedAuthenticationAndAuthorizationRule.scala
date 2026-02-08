@@ -17,6 +17,7 @@
 package tech.beshu.ror.accesscontrol.blocks.rules.auth.base
 
 import monix.eval.Task
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.{AuthRule, AuthenticationRule, AuthorizationRule, RuleResult}
 import tech.beshu.ror.accesscontrol.blocks.rules.auth.base.impersonation.{AuthenticationImpersonationCustomSupport, AuthorizationImpersonationCustomSupport}
 import tech.beshu.ror.accesscontrol.blocks.{BlockContext, BlockContextUpdater}
@@ -26,6 +27,9 @@ private[auth] abstract class BaseComposedAuthenticationAndAuthorizationRule(auth
   extends AuthRule
     with AuthenticationImpersonationCustomSupport
     with AuthorizationImpersonationCustomSupport {
+
+  override val externalDependencies: Set[ExternalDependency] =
+    authenticationRule.externalDependencies ++ authorizationRule.externalDependencies
 
   override protected def authenticate[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] =
     authenticationRule.doAuthenticate(blockContext)

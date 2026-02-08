@@ -19,7 +19,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 import cats.implicits.*
 import monix.eval.Task
 import tech.beshu.ror.accesscontrol.blocks.BlockContext
-import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalAuthorizationService
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalAuthorizationService, ExternalDependency}
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.RuleName
@@ -36,6 +36,8 @@ class ExternalAuthorizationRule(val settings: ExternalAuthorizationRule.Settings
   extends BaseAuthorizationRule {
 
   override val name: Rule.Name = ExternalAuthorizationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] = Set(ExternalDependency.ExternalAuthorization(settings.service))
 
   override val groupsLogic: GroupsLogic = settings.permittedGroupsLogic
 

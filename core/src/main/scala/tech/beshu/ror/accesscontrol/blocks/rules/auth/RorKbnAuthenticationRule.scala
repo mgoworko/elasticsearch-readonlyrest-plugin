@@ -17,7 +17,7 @@
 package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import monix.eval.Task
-import tech.beshu.ror.accesscontrol.blocks.definitions.RorKbnDef
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, RorKbnDef}
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.{AuthenticationRule, RuleName, RuleResult}
@@ -37,6 +37,8 @@ final class RorKbnAuthenticationRule(val settings: Settings,
     with BaseRorKbnRule {
 
   override val name: Rule.Name = RorKbnAuthenticationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] = Set.empty
 
   override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 

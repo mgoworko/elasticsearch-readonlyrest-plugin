@@ -18,6 +18,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import cats.implicits.*
 import monix.eval.Task
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
@@ -36,6 +37,8 @@ import tech.beshu.ror.accesscontrol.request.RequestContext
 import tech.beshu.ror.syntax.*
 import tech.beshu.ror.utils.uniquelist.UniqueNonEmptyList
 
+import scala.collection.immutable
+
 final class ProxyAuthRule(val settings: Settings,
                           override implicit val userIdCaseSensitivity: CaseSensitivity,
                           override val impersonation: Impersonation)
@@ -46,6 +49,8 @@ final class ProxyAuthRule(val settings: Settings,
   override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.Available(settings.userIds.toCovariantSet)
 
   override val name: Rule.Name = ProxyAuthRule.Name.name
+
+  override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
 
   override def tryToAuthenticateUser[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] = Task {
     getLoggedUser(blockContext.requestContext) match {

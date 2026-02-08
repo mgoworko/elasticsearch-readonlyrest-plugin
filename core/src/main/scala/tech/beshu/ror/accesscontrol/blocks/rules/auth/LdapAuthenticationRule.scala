@@ -18,6 +18,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import cats.implicits.*
 import monix.eval.Task
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.definitions.ldap.LdapAuthenticationService
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
@@ -29,12 +30,16 @@ import tech.beshu.ror.accesscontrol.blocks.rules.auth.base.impersonation.Imperso
 import tech.beshu.ror.accesscontrol.blocks.rules.auth.base.impersonation.SimpleAuthenticationImpersonationSupport.UserExistence
 import tech.beshu.ror.accesscontrol.domain.{CaseSensitivity, Credentials, RequestId, User}
 
+import scala.collection.immutable
+
 final class LdapAuthenticationRule(val settings: Settings,
                                    override implicit val userIdCaseSensitivity: CaseSensitivity,
                                    override val impersonation: Impersonation)
   extends BaseBasicAuthAuthenticationRule {
 
   override val name: Rule.Name = LdapAuthenticationRule.Name.name
+
+  override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set(ExternalDependency.LdapAuthentication(settings.ldap))
 
   override val eligibleUsers: EligibleUsersSupport = EligibleUsersSupport.NotAvailable
 

@@ -140,7 +140,7 @@ object JwtDefinitionsDecoder {
               .downField("external_validator")
               .withFocus(_.mapObject(_.add("name", Json.fromString("jwt"))))
             )
-            .left.map(_.overrideDefaultErrorWith(DefinitionsLevelCreationError(Message("External validator has to be defined when signature algorithm is None"))))
+            .left.map{e =>e.overrideDefaultErrorWith(DefinitionsLevelCreationError(Message(s"${e.message} External validator has to be defined when signature algorithm is None")))}
             .map(SignatureCheckMethod.NoCheck.apply)
         case Some("HMAC") | None =>
           decodeSignatureKey

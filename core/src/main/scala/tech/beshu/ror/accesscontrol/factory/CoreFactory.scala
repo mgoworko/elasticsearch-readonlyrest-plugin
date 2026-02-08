@@ -422,6 +422,7 @@ class RawRorSettingsBasedCoreFactory(esEnv: EsEnv)
 
   private def localUsersFromUserDefs(definitions: Definitions[UserDef]) = {
     definitions.items
+      .flatMap(item => Option.when(item.externalDependencies.isEmpty)(item))
       .flatMap { definition =>
         List(
           localUsersFromUsernamePatterns(definition.usernames, unknownUsersForWildcardPattern = true),

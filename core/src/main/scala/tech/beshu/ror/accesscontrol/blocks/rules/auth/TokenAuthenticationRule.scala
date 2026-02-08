@@ -18,6 +18,7 @@ package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import cats.implicits.*
 import monix.eval.Task
+import tech.beshu.ror.accesscontrol.blocks.definitions.ExternalDependency
 import tech.beshu.ror.accesscontrol.blocks.mocks.MocksProvider
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.AuthenticationRule.EligibleUsersSupport
@@ -33,12 +34,16 @@ import tech.beshu.ror.accesscontrol.domain.LoggedUser.DirectlyLoggedUser
 import tech.beshu.ror.accesscontrol.request.RequestContext
 import tech.beshu.ror.syntax.*
 
+import scala.collection.immutable
+
 final class TokenAuthenticationRule(val settings: Settings,
                                     override implicit val userIdCaseSensitivity: CaseSensitivity,
                                     override val impersonation: Impersonation)
   extends BaseAuthenticationRule {
 
   override val name: Rule.Name = TokenAuthenticationRule.Name.name
+
+  override val externalDependencies: immutable.Set[ExternalDependency] = immutable.Set.empty
 
   override val eligibleUsers: AuthenticationRule.EligibleUsersSupport = EligibleUsersSupport.Available(Set(settings.user))
 

@@ -17,7 +17,7 @@
 package tech.beshu.ror.accesscontrol.blocks.rules.auth
 
 import monix.eval.Task
-import tech.beshu.ror.accesscontrol.blocks.definitions.RorKbnDef
+import tech.beshu.ror.accesscontrol.blocks.definitions.{ExternalDependency, RorKbnDef}
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule
 import tech.beshu.ror.accesscontrol.blocks.rules.Rule.{AuthorizationRule, RuleName, RuleResult}
 import tech.beshu.ror.accesscontrol.blocks.rules.auth.RorKbnAuthorizationRule.Settings
@@ -35,6 +35,8 @@ final class RorKbnAuthorizationRule(val settings: Settings)
     with BaseRorKbnRule {
 
   override val name: Rule.Name = RorKbnAuthorizationRule.Name.name
+
+  override val externalDependencies: Set[ExternalDependency] = Set.empty
 
   override protected[rules] def authorize[B <: BlockContext : BlockContextUpdater](blockContext: B): Task[RuleResult[B]] = Task.delay {
     settings.groupsLogic match {
